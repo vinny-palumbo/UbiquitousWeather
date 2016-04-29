@@ -91,6 +91,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
         Paint mBackgroundPaint;
         Paint mTimeTextPaint;
         Paint mDateTextPaint;
+        Paint mLinePaint;
         boolean mAmbient;
         Time mTime;
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
@@ -129,6 +130,9 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
 
             mDateTextPaint = new Paint();
             mDateTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+
+            mLinePaint = new Paint();
+            mLinePaint = createTextPaint(resources.getColor(R.color.digital_text));
 
             mTime = new Time();
         }
@@ -220,6 +224,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 if (mLowBitAmbient) {
                     mTimeTextPaint.setAntiAlias(!inAmbientMode);
                     mDateTextPaint.setAntiAlias(!inAmbientMode);
+                    mLinePaint.setAntiAlias(!inAmbientMode);
                 }
                 invalidate();
             }
@@ -246,6 +251,13 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             // Add date string
             String dateText = "FRI, JUL 14 2015";
             canvas.drawText(dateText, mXOffset, mYOffset + 25, mDateTextPaint);
+
+            // Add horizontal line in the center
+            float left = bounds.width() * 4/10;
+            float right = bounds.width() * 6/10;
+            float top = bounds.height() / 2 + 1;
+            float bottom = bounds.height() / 2;
+            canvas.drawRect(left, top, right, bottom, mLinePaint);
         }
 
         /**
