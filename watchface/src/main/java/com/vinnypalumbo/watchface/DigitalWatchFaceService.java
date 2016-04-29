@@ -276,7 +276,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
 
             mTime.setToNow();
             // Draw the Time
-            String timeText = String.format("%d:%02d", mTime.hour, mTime.minute);
+            String timeText = String.format("%02d:%02d", mTime.hour, mTime.minute);
             canvas.drawText(timeText, mXOffsetTime, mYOffsetTime, mTimeTextPaint);
 
             // Add date string
