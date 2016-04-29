@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -105,6 +107,8 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
         float mYOffsetTime;
         float mXOffsetDate;
         float mYOffsetDate;
+        float mXOffsetIcon;
+        float mYOffsetIcon;
         float mXOffsetHighTemp;
         float mYOffsetHighTemp;
         float mXOffsetLowTemp;
@@ -133,6 +137,9 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
 
             mXOffsetDate = resources.getDimension(R.dimen.digital_x_offset_date);
             mYOffsetDate = resources.getDimension(R.dimen.digital_y_offset_date);
+
+            mXOffsetIcon = resources.getDimension(R.dimen.digital_x_offset_icon);
+            mYOffsetIcon = resources.getDimension(R.dimen.digital_y_offset_icon);
 
             mXOffsetHighTemp = resources.getDimension(R.dimen.digital_x_offset_hightemp);
             mYOffsetHighTemp = resources.getDimension(R.dimen.digital_y_offset_hightemp);
@@ -289,6 +296,11 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             float top = bounds.height() * 57/100 + 1;
             float bottom = bounds.height() * 57/100;
             canvas.drawRect(left, top, right, bottom, mLinePaint);
+
+            // Add weather icon
+            Bitmap weatherIcon = BitmapFactory.decodeResource(getResources(),
+                    R.drawable.ic_clear);
+            canvas.drawBitmap(weatherIcon, mXOffsetIcon, mYOffsetIcon, null);
 
             // Add High Temp
             float highTempText= 25;
