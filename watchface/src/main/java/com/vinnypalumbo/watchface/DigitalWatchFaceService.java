@@ -126,13 +126,13 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             mBackgroundPaint.setColor(resources.getColor(R.color.background));
 
             mTimeTextPaint = new Paint();
-            mTimeTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+            mTimeTextPaint = createTextPaint(resources.getColor(R.color.digital_text_time));
 
             mDateTextPaint = new Paint();
-            mDateTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+            mDateTextPaint = createTextPaint(resources.getColor(R.color.digital_text_date));
 
             mLinePaint = new Paint();
-            mLinePaint = createTextPaint(resources.getColor(R.color.digital_text));
+            mLinePaint = createTextPaint(resources.getColor(R.color.digital_line));
 
             mTime = new Time();
         }
@@ -196,8 +196,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             boolean isRound = insets.isRound();
             mXOffset = resources.getDimension(isRound
                     ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
-            float timeTextSize = resources.getDimension(isRound
-                    ? R.dimen.digital_time_text_size_round : R.dimen.digital_time_text_size);
+            float timeTextSize = resources.getDimension(R.dimen.digital_time_text_size);
             float dateTextSize = resources.getDimension(R.dimen.digital_date_text_size);
 
             mTimeTextPaint.setTextSize(timeTextSize);
@@ -250,13 +249,13 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
 
             // Add date string
             String dateText = "FRI, JUL 14 2015";
-            canvas.drawText(dateText, mXOffset, mYOffset + 25, mDateTextPaint);
+            canvas.drawText(dateText, mXOffset - 15, mYOffset + 35, mDateTextPaint);
 
             // Add horizontal line in the center
             float left = bounds.width() * 4/10;
             float right = bounds.width() * 6/10;
-            float top = bounds.height() / 2 + 1;
-            float bottom = bounds.height() / 2;
+            float top = bounds.height() * 57/100 + 1;
+            float bottom = bounds.height() * 57/100;
             canvas.drawRect(left, top, right, bottom, mLinePaint);
         }
 
