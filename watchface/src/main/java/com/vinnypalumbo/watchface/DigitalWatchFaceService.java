@@ -35,8 +35,6 @@ import android.text.format.Time;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
-import com.vinnypalumbo.watchface.R;
-
 import java.lang.ref.WeakReference;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -92,6 +90,8 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
         Paint mTimeTextPaint;
         Paint mDateTextPaint;
         Paint mLinePaint;
+        Paint mHighTempTextPaint;
+        Paint mLowTempTextPaint;
         boolean mAmbient;
         Time mTime;
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
@@ -101,8 +101,14 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 mTime.setToNow();
             }
         };
-        float mXOffset;
-        float mYOffset;
+        float mXOffsetTime;
+        float mYOffsetTime;
+        float mXOffsetDate;
+        float mYOffsetDate;
+        float mXOffsetHighTemp;
+        float mYOffsetHighTemp;
+        float mXOffsetLowTemp;
+        float mYOffsetLowTemp;
 
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
@@ -120,19 +126,39 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                     .setShowSystemUiTime(false)
                     .build());
             Resources resources = DigitalWatchFaceService.this.getResources();
-            mYOffset = resources.getDimension(R.dimen.digital_y_offset);
+
+            // set offsets
+
+            mYOffsetTime = resources.getDimension(R.dimen.digital_y_offset_time);
+
+            mXOffsetDate = resources.getDimension(R.dimen.digital_x_offset_date);
+            mYOffsetDate = resources.getDimension(R.dimen.digital_y_offset_date);
+
+            mXOffsetHighTemp = resources.getDimension(R.dimen.digital_x_offset_hightemp);
+            mYOffsetHighTemp = resources.getDimension(R.dimen.digital_y_offset_hightemp);
+
+            mXOffsetLowTemp = resources.getDimension(R.dimen.digital_x_offset_lowtemp);
+            mYOffsetLowTemp = resources.getDimension(R.dimen.digital_y_offset_lowtemp);
+
+            // set paint colors
 
             mBackgroundPaint = new Paint();
             mBackgroundPaint.setColor(resources.getColor(R.color.background));
 
             mTimeTextPaint = new Paint();
-            mTimeTextPaint = createTextPaint(resources.getColor(R.color.digital_text_time));
+            mTimeTextPaint = createTextPaint(resources.getColor(R.color.white));
 
             mDateTextPaint = new Paint();
-            mDateTextPaint = createTextPaint(resources.getColor(R.color.digital_text_date));
+            mDateTextPaint = createTextPaint(resources.getColor(R.color.faded_white));
 
             mLinePaint = new Paint();
-            mLinePaint = createTextPaint(resources.getColor(R.color.digital_line));
+            mLinePaint = createTextPaint(resources.getColor(R.color.more_faded_white));
+
+            mHighTempTextPaint = new Paint();
+            mHighTempTextPaint = createTextPaint(resources.getColor(R.color.white));
+
+            mLowTempTextPaint = new Paint();
+            mLowTempTextPaint = createTextPaint(resources.getColor(R.color.faded_white));
 
             mTime = new Time();
         }
@@ -194,13 +220,17 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             // Load resources that have alternate values for round watches.
             Resources resources = DigitalWatchFaceService.this.getResources();
             boolean isRound = insets.isRound();
-            mXOffset = resources.getDimension(isRound
-                    ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
+            mXOffsetTime = resources.getDimension(isRound
+                    ? R.dimen.digital_x_offset_time_round : R.dimen.digital_x_offset_time);
             float timeTextSize = resources.getDimension(R.dimen.digital_time_text_size);
             float dateTextSize = resources.getDimension(R.dimen.digital_date_text_size);
+            float highTempTextSize = resources.getDimension(R.dimen.digital_hightemp_text_size);
+            float lowTempTextSize = resources.getDimension(R.dimen.digital_lowtemp_text_size);
 
             mTimeTextPaint.setTextSize(timeTextSize);
             mDateTextPaint.setTextSize(dateTextSize);
+            mHighTempTextPaint.setTextSize(highTempTextSize);
+            mLowTempTextPaint.setTextSize(lowTempTextSize);
         }
 
         @Override
@@ -224,6 +254,8 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                     mTimeTextPaint.setAntiAlias(!inAmbientMode);
                     mDateTextPaint.setAntiAlias(!inAmbientMode);
                     mLinePaint.setAntiAlias(!inAmbientMode);
+                    mHighTempTextPaint.setAntiAlias(!inAmbientMode);
+                    mLowTempTextPaint.setAntiAlias(!inAmbientMode);
                 }
                 invalidate();
             }
@@ -243,13 +275,13 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             }
 
             mTime.setToNow();
-            // Draw H:MM in ambient mode and interactive mode.
+            // Draw the Time
             String timeText = String.format("%d:%02d", mTime.hour, mTime.minute);
-            canvas.drawText(timeText, mXOffset, mYOffset, mTimeTextPaint);
+            canvas.drawText(timeText, mXOffsetTime, mYOffsetTime, mTimeTextPaint);
 
             // Add date string
             String dateText = getDateString(mTime);// e.g.: "FRI, JUL 14 2015"
-            canvas.drawText(dateText, mXOffset - 15, mYOffset + 35, mDateTextPaint);
+            canvas.drawText(dateText, mXOffsetDate, mYOffsetDate, mDateTextPaint);
 
             // Add horizontal line in the center
             float left = bounds.width() * 4/10;
@@ -257,6 +289,16 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             float top = bounds.height() * 57/100 + 1;
             float bottom = bounds.height() * 57/100;
             canvas.drawRect(left, top, right, bottom, mLinePaint);
+
+            // Add High Temp
+            float highTempText= 25;
+            String formattedHighTemp = String.format(getString(R.string.format_temperature), highTempText);
+            canvas.drawText(formattedHighTemp, mXOffsetHighTemp, mYOffsetHighTemp, mHighTempTextPaint);
+
+            // Add Low Temp
+            float lowTempText= 16;
+            String formattedLowTemp = String.format(getString(R.string.format_temperature), lowTempText);
+            canvas.drawText(formattedLowTemp, mXOffsetLowTemp, mYOffsetLowTemp, mLowTempTextPaint);
         }
 
         private String getDateString(Time time) {

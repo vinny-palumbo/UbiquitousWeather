@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background">#1ca8f4</color>
-    <color name="digital_text_time">#ffffff</color>
-    <color name="digital_text_date">#a6ffffff</color>
-    <color name="digital_line">#43ffffff</color>
+    <color name="white">#ffffff</color>
+    <color name="faded_white">#a6ffffff</color>
+    <color name="more_faded_white">#43ffffff</color>
 </resources>

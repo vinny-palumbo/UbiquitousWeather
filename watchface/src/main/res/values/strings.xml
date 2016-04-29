@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">watchface</string>
     <string name="my_digital_name">Sunshine Watch</string>
 
@@ -24,4 +24,7 @@
     <string name="october">OCT</string>
     <string name="november">NOV</string>
     <string name="december">DEC</string>
+
+    <!--Add degree symbol after temperature number-->
+    <string name="format_temperature"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
 </resources>
