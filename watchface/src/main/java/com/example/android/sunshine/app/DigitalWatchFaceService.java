@@ -287,7 +287,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             canvas.drawText(timeText, mXOffsetTime, mYOffsetTime, mTimeTextPaint);
 
             // Add date string
-            String dateText = getDateString(mTime);// e.g.: "FRI, JUL 14 2015"
+            String dateText = Utility.getDateString(getApplicationContext(), mTime);// e.g.: "FRI, JUL 14 2015"
             canvas.drawText(dateText, mXOffsetDate, mYOffsetDate, mDateTextPaint);
 
             // Add horizontal line in the center
@@ -315,93 +315,9 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             canvas.drawText(formattedLowTemp, mXOffsetLowTemp, mYOffsetLowTemp, mLowTempTextPaint);
         }
 
-        private String getDateString(Time time) {
-            String date;
-            int weekDay;
-            int month;
-            int monthDay;
-            int year;
-
-            // Format weekDay (e.g.: SUN, MON, TUE, WED, THU, FRI, SAT)
-            weekDay = mTime.weekDay;
-            switch(weekDay) {
-                case 0:
-                    date = getResources().getString(R.string.sunday);
-                    break;
-                case 1:
-                    date = getResources().getString(R.string.monday);
-                    break;
-                case 2:
-                    date = getResources().getString(R.string.tuesday);
-                    break;
-                case 3:
-                    date = getResources().getString(R.string.wednesday);
-                    break;
-                case 4:
-                    date = getResources().getString(R.string.thursday);
-                    break;
-                case 5:
-                    date = getResources().getString(R.string.friday);
-                    break;
-                case 6:
-                    date = getResources().getString(R.string.saturday);
-                    break;
-                default:
-                    date = "";
             }
 
-            // Format month (e.g.: JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC)
-            month = mTime.month;
-            switch(month) {
-                case 0:
-                    date += getResources().getString(R.string.january);
-                    break;
-                case 1:
-                    date += getResources().getString(R.string.february);
-                    break;
-                case 2:
-                    date += getResources().getString(R.string.march);
-                    break;
-                case 3:
-                    date += getResources().getString(R.string.april);
-                    break;
-                case 4:
-                    date += getResources().getString(R.string.may);
-                    break;
-                case 5:
-                    date += getResources().getString(R.string.june);
-                    break;
-                case 6:
-                    date += getResources().getString(R.string.july);
-                    break;
-                case 7:
-                    date += getResources().getString(R.string.august);
-                    break;
-                case 8:
-                    date += getResources().getString(R.string.september);
-                    break;
-                case 9:
-                    date += getResources().getString(R.string.october);
-                    break;
-                case 10:
-                    date += getResources().getString(R.string.november);
-                    break;
-                case 11:
-                    date += getResources().getString(R.string.december);
-                    break;
-                default:
-                    date += "";
             }
-
-            // Format monthDay (e.g.: 01, 02, 03, 04, ..., 29, 30, 31)
-            monthDay = mTime.monthDay;
-            date += " " + monthDay;
-
-            // Format year (e.g.: 2016, 2017, 2018, ...)
-            year = mTime.year;
-            date += " " + year;
-
-            return date;
         }
 
         /**
