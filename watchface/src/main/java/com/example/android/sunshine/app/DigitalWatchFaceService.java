@@ -295,7 +295,9 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             float right = bounds.width() * 6/10;
             float top = bounds.height() * 57/100 + 1;
             float bottom = bounds.height() * 57/100;
-            canvas.drawRect(left, top, right, bottom, mLinePaint);
+            if(highTempText != null || lowTempText != null || weatherIcon != null){
+                canvas.drawRect(left, top, right, bottom, mLinePaint);
+            }
 
             // Add weather icon
             Bitmap weatherIcon = BitmapFactory.decodeResource(getResources(),
