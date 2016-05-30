@@ -300,9 +300,12 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             }
 
             // Add weather icon
-            Bitmap weatherIcon = BitmapFactory.decodeResource(getResources(),
-                    R.drawable.ic_clear);
-            canvas.drawBitmap(weatherIcon, mXOffsetIcon, mYOffsetIcon, null);
+//            weatherId = 800;
+            if(weatherId > -1){
+                Bitmap weatherIcon = BitmapFactory.decodeResource(getResources(),
+                        Utility.getIconResourceForWeatherCondition(weatherId));
+                canvas.drawBitmap(weatherIcon, mXOffsetIcon, mYOffsetIcon, null);
+            }
 
             // Add High Temp
             float highTempText= 25;
