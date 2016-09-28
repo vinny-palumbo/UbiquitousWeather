@@ -348,7 +348,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             }
 
             // Add weather icon
-//            weatherId = 800;
+            weatherId = 800;
             if(weatherId > -1){
                 Bitmap weatherIcon = BitmapFactory.decodeResource(getResources(),
                         Utility.getIconResourceForWeatherCondition(weatherId));
@@ -356,14 +356,14 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             }
 
             // Add High Temp
-//            highTempText = "0";
+            highTempText = "0";
             if(highTempText != null){
                 String formattedHighTemp = String.format(getString(R.string.format_temperature), highTempText);
                 canvas.drawText(formattedHighTemp, mXOffsetHighTemp, mYOffsetHighTemp, mHighTempTextPaint);
             }
 
             // Add Low Temp
-//            lowTempText = "0";
+            lowTempText = "0";
             if(lowTempText != null) {
                 String formattedLowTemp = String.format(getString(R.string.format_temperature), lowTempText);
                 canvas.drawText(formattedLowTemp, mXOffsetLowTemp, mYOffsetLowTemp, mLowTempTextPaint);
