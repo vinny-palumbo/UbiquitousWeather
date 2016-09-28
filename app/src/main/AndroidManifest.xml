@@ -169,6 +169,17 @@
             android:enabled="@bool/widget_detail_enabled"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <!--Watchface Service-->
+        <service
+            android:name=".wear.WatchfaceWeatherService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/watchface-weather" />
+            </intent-filter>
+        </service>
+        <!--Google Cloud Messaging-->
         <service
             android:name="gcm.MyGcmListenerService"
             android:exported="false">

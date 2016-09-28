@@ -36,6 +36,13 @@ import com.example.android.sunshine.app.R;
 import com.example.android.sunshine.app.Utility;
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.muzei.WeatherMuzeiSource;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,8 +59,16 @@ import java.net.URL;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
-public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
+public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
     public final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
+
+    private static final String PATH_WEATHER = "/watchface-weather";
+    private static final String KEY_HIGH_TEMP = "highTemp";
+    private static final String KEY_LOW_TEMP = "lowTemp";
+    private static final String KEY_WEATHER_ID = "weatherId";
+
+    GoogleApiClient mGoogleApiClient;
+
     public static final String ACTION_DATA_UPDATED =
             "com.example.android.sunshine.app.ACTION_DATA_UPDATED";
     // Interval at which to sync with the weather, in seconds.
@@ -62,7 +77,6 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private static final int WEATHER_NOTIFICATION_ID = 3004;
-
 
     private static final String[] NOTIFY_WEATHER_PROJECTION = new String[] {
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
@@ -89,6 +103,30 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public SunshineSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mGoogleApiClient.connect();
+        Log.d(LOG_TAG, "mGoogleApiClient.connect() called");
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(LOG_TAG, "onConnected");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(LOG_TAG, "onConnectionSuspended(): Connection to Google API client was suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e(LOG_TAG, "onConnectionFailed(): Failed to connect, with result: " + connectionResult);
     }
 
     @Override
@@ -214,6 +252,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     private void getWeatherDataFromJson(String forecastJsonStr,
                                         String locationSetting)
             throws JSONException {
+        Log.d(LOG_TAG, "getWeatherDataFromJson");
 
         // Now we have a String representing the complete forecast in JSON Format.
         // Fortunately parsing is easy:  constructor takes the JSON string and converts it
@@ -352,6 +391,12 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, weatherId);
 
                 cVVector.add(weatherValues);
+
+                // Update Watchface with today's most recent forecast
+                if (i == 0 && mGoogleApiClient != null) {
+                    Log.d(LOG_TAG, "High: " + high + ", Low: " + low + ", Weather ID: " + weatherId);
+                    updateWatchfaceWeather(high, low, weatherId);
+                }
             }
 
             int inserted = 0;
@@ -378,6 +423,34 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             e.printStackTrace();
             setLocationStatus(getContext(), LOCATION_STATUS_SERVER_INVALID);
         }
+    }
+
+    public void updateWatchfaceWeather(double high, double low, int weatherId) {
+        Log.d(LOG_TAG, "updateWatchfaceWeather");
+
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(PATH_WEATHER);
+
+//        putDataMapRequest.getDataMap().putString(KEY_HIGH_TEMP, "37C");
+//        putDataMapRequest.getDataMap().putString(KEY_LOW_TEMP, "31C");
+//        putDataMapRequest.getDataMap().putInt(KEY_WEATHER_ID, 700);
+
+        putDataMapRequest.getDataMap().putString(KEY_HIGH_TEMP, String.valueOf(high));
+        putDataMapRequest.getDataMap().putString(KEY_LOW_TEMP, String.valueOf(low));
+        putDataMapRequest.getDataMap().putInt(KEY_WEATHER_ID, weatherId);
+
+        PutDataRequest request = putDataMapRequest.asPutDataRequest();
+        Wearable.DataApi.putDataItem(mGoogleApiClient, request)
+                .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+                    @Override
+                    public void onResult(DataApi.DataItemResult dataItemResult) {
+                        if (!dataItemResult.getStatus().isSuccess()) {
+                            Log.d(LOG_TAG, "Failed to update watchface with updated weather forecast");
+                        } else {
+                            Log.d(LOG_TAG, "Successfully updated watchface with updated weather forecast");
+                        }
+                    }
+                });
+        Wearable.DataApi.deleteDataItems(mGoogleApiClient, request.getUri());
     }
 
     private void updateWidgets() {
@@ -579,6 +652,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
+        Log.d("SunshineSyncAdapter", "syncImmediately");
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
