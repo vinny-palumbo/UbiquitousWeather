@@ -275,8 +275,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             // Load resources that have alternate values for round watches.
             Resources resources = DigitalWatchFaceService.this.getResources();
             boolean isRound = insets.isRound();
-            mXOffsetTime = resources.getDimension(isRound
-                    ? R.dimen.digital_x_offset_time_round : R.dimen.digital_x_offset_time);
+            mXOffsetTime = resources.getDimension(R.dimen.digital_x_offset_time);
             float timeTextSize = resources.getDimension(R.dimen.digital_time_text_size);
             float dateTextSize = resources.getDimension(R.dimen.digital_date_text_size);
             float highTempTextSize = resources.getDimension(R.dimen.digital_hightemp_text_size);
