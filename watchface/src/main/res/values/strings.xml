@@ -1,0 +1,30 @@
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+    <string name="app_name">watchface</string>
+    <string name="my_digital_name">Sunshine Watch</string>
+
+    <!--Days of the Week-->
+    <string name="sunday">SUN,\u0020</string>
+    <string name="monday">MON,\u0020</string>
+    <string name="tuesday">TUE,\u0020</string>
+    <string name="wednesday">WED,\u0020</string>
+    <string name="thursday">THU,\u0020</string>
+    <string name="friday">FRI,\u0020</string>
+    <string name="saturday">SAT,\u0020</string>
+
+    <!--Months -->
+    <string name="january">JAN</string>
+    <string name="february">FEB</string>
+    <string name="march">MAR</string>
+    <string name="april">APR</string>
+    <string name="may">MAY</string>
+    <string name="june">JUN</string>
+    <string name="july">JUL</string>
+    <string name="august">AUG</string>
+    <string name="september">SEP</string>
+    <string name="october">OCT</string>
+    <string name="november">NOV</string>
+    <string name="december">DEC</string>
+
+    <!--Add degree symbol after temperature number-->
+    <string name="format_temperature"><xliff:g id="temp">%1s</xliff:g>\u00B0</string>
+</resources>
